@@ -4,6 +4,7 @@ import './App.css';
 import Contact from './Contact'
 
 import contacts from './contacts.json'
+import SearchBar from './SearchBar';
 
 class App extends React.Component {
 
@@ -11,27 +12,12 @@ class App extends React.Component {
     myContacts: contacts.slice(0, 5),
 
     newContactName: "",
-    newContactPopularity: 5
+    newContactPopularity: 5,
+
+    formShown: false,
+
+    searchTerm: ""
   }
-
-  // // class properties // ES10
-  // addContactHandler = () => {
-
-  //   let remainingContacts = contacts.slice(5)
-
-  //   let pos = Math.floor(Math.random() * remainingContacts.length)
-  //   let randomEl = remainingContacts[pos]
-
-  //   // DON'T MODIFY ORIGINAL STATE !
-  //   // this.state.myContacts.push(randomEl)    
-
-  //   // let copy = [...this.state.myContacts]
-  //   // copy.push(randomEl)
-
-  //   this.setState({
-  //     myContacts: [...this.state.myContacts, randomEl]
-  //   })
-  // }
 
   changeNameHandler = (event) => {
     //console.log(event)
@@ -58,14 +44,32 @@ class App extends React.Component {
       myContacts: [...this.state.myContacts, newContact],
 
       newContactName: "",
-      newContactPopularity: 5
+      newContactPopularity: 5,
+
+      formShown: false
     })
 
   }
 
+  showFormHandler = () => {
+    this.setState({
+      formShown: true
+    })
+  }
+
+
+  changeSearchHandler = (newSearchTerm) => {
+    this.setState({
+      searchTerm: newSearchTerm
+    })
+  }
+
+
   render() {
 
     // let firstFive = contacts.slice(0, 5)
+
+    let filteredContacts = this.state.myContacts.filter(c => c.name.includes(this.state.searchTerm))
 
     return (
       <div className="App" >
@@ -73,11 +77,20 @@ class App extends React.Component {
 
         <br></br>
 
-        <input onChange={this.changeNameHandler} value={this.state.newContactName} type="text"></input>
-        <input onChange={this.changePopularityHandler} value={this.state.newContactPopularity} type="number"></input>
-        <button onClick={this.addNewContactHandler} > Add Contact </button>
+        {this.state.formShown ?
+          <div>
+            <input onChange={this.changeNameHandler} value={this.state.newContactName} type="text"></input>
+            <input onChange={this.changePopularityHandler} value={this.state.newContactPopularity} type="number"></input>
+            <button onClick={this.addNewContactHandler} > Add Contact </button>
+          </div> : <button onClick={this.showFormHandler}>Add New Contact</button>
+        }
 
-        {this.state.myContacts.map((contact) => {
+        <br />
+
+        {/* controlled component */}
+        <SearchBar searchChange={this.changeSearchHandler} searchTerm={this.state.searchTerm}></SearchBar>
+
+        {filteredContacts.map((contact) => {
 
           return <Contact name={contact.name} picture={contact.pictureUrl}></Contact>
 
